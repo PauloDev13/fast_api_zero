@@ -19,7 +19,7 @@ def test_create_user(client):
         json={
             'username': 'Paulo',
             'email': 'prmorais1302@gmail.com',
-            'password': '123',
+            'password': '1234',
         },
     )
     assert response.status_code == HTTPStatus.CREATED
@@ -34,9 +34,34 @@ def test_get_users(client):
     response = client.get('/users/')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        'users': [{
-            'username': 'Paulo',
-            'email': 'prmorais1302@gmail.com',
-            'id': 1,
-        }]
+        'users': [
+            {
+                'username': 'Paulo',
+                'email': 'prmorais1302@gmail.com',
+                'id': 1,
+            }
+        ]
     }
+
+
+def test_update_user(client):
+    response = client.put(
+        '/users/1',
+        json={
+            'username': 'Paulo Roberto',
+            'email': 'prmorais1302@gmail.com',
+            'password': '1234',
+        },
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'username': 'Paulo Roberto',
+        'email': 'prmorais1302@gmail.com',
+        'id': 1,
+    }
+
+
+def test_delete_user(client):
+    response = client.delete('/users/1')
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {'message': 'User deleted'}
