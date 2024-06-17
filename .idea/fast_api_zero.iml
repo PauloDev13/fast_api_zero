@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/fast_api_zero" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/fast_api_zero" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (fast_api_zero)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyNamespacePackagesService">
