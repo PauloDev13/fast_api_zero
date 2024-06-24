@@ -1,10 +1,6 @@
 from http import HTTPStatus
 
-# from fastapi.testclient import TestClient
-#
-# from fast_api_zero.app import app
-#
-# client = TestClient(app)
+from fast_api_zero.schemas import UserPublic
 
 
 def test_root_dev_retornar_ok_e_ola_mundo(client):
@@ -35,30 +31,27 @@ def test_create_user(client):
 def test_get_users(client):
     response = client.get('/users/')
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {
-        'users': [
-            {
-                'username': 'Paulo',
-                'email': 'prmorais1302@gmail.com',
-                'id': 1,
-            }
-        ]
-    }
+    assert response.json() == {'users': []}
+
+
+# teste buscando todos os usuários usando user
+def test_get_users_with_users(client, user):
+    user_schema = UserPublic.model_validate(user).model_dump()
+    response = client.get('/users/')
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {'users': [user_schema]}
 
 
 # teste buscando um usuário com sucesso
-def test_get_user(client):
+def test_get_user(client, user):
+    user_schema = UserPublic.model_validate(user).model_dump()
     response = client.get('/users/1')
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {
-        'username': 'Paulo',
-        'email': 'prmorais1302@gmail.com',
-        'id': 1,
-    }
+    assert response.json() == user_schema
 
 
 # teste atualizando um usuário com sucesso
-def test_update_user(client):
+def test_update_user(client, user):
     response = client.put(
         '/users/1',
         json={
@@ -90,10 +83,10 @@ def test_update_user_not_found(client):
 
 
 # teste removendo um usuário com sucesso
-def test_delete_user(client):
+def test_delete_user(client, user):
     response = client.delete('/users/1')
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == {'message': 'User deleted'}
+    assert response.json() == {'message': f'User {user.id} deleted'}
 
 
 # teste removendo um usuário inexistente e exibindo erro
