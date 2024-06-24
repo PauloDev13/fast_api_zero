@@ -55,9 +55,6 @@ def create_user(user: UserSchema, session: Session = Depends(get_session)):
     session.refresh(db_user)
 
     return db_user
-    # user_with_id = UserDB(**user.model_dump(), id=len(database) + 1)
-    # database.append(user_with_id)
-    # return user_with_id
 
 
 # busca todos os usuários na base de dados

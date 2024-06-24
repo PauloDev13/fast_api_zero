@@ -9,7 +9,7 @@ def test_root_dev_retornar_ok_e_ola_mundo(client):
     assert response.json() == {'message': 'Olá Mundo!'}
 
 
-# teste criando um usuário
+# teste criando um usuário com sucesso (201 - CREATED)
 def test_create_user(client):
     response = client.post(
         '/users/',
@@ -27,14 +27,44 @@ def test_create_user(client):
     }
 
 
-# teste buscando todos os usuários
+# teste criando usuário com o mesmo username (400 - BAD REQUEST)
+def test_create_user_username_already_exists(client, user):
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'test',
+            'email': 'teste2@gmail.com',
+            'password': '12345',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Username already exists!'}
+
+
+# teste criando usuário com o mesmo email (400 - BAD REQUEST)
+def test_create_user_email_already_exists(client, user):
+    response = client.post(
+        '/users/',
+        json={
+            'username': 'paulo',
+            'email': 'teste@gmail.com',
+            'password': '12345',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Email already exists!'}
+
+
+# teste buscando todos os usuários (200 - OK)
 def test_get_users(client):
     response = client.get('/users/')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'users': []}
 
 
-# teste buscando todos os usuários usando user
+# teste buscando todos os usuários usando user (200 - OK)
 def test_get_users_with_users(client, user):
     user_schema = UserPublic.model_validate(user).model_dump()
     response = client.get('/users/')
@@ -42,7 +72,7 @@ def test_get_users_with_users(client, user):
     assert response.json() == {'users': [user_schema]}
 
 
-# teste buscando um usuário com sucesso
+# teste buscando um usuário com sucesso (200 - OK)
 def test_get_user(client, user):
     user_schema = UserPublic.model_validate(user).model_dump()
     response = client.get('/users/1')
@@ -50,7 +80,7 @@ def test_get_user(client, user):
     assert response.json() == user_schema
 
 
-# teste atualizando um usuário com sucesso
+# teste atualizando um usuário com sucesso (200 - OK)
 def test_update_user(client, user):
     response = client.put(
         '/users/1',
@@ -68,7 +98,7 @@ def test_update_user(client, user):
     }
 
 
-# teste atualizando um usuário inexistente e exibindo erro
+# teste atualizando um usuário inexistente (404 - NOT FOUND)
 def test_update_user_not_found(client):
     response = client.put(
         '/users/10',
@@ -82,14 +112,14 @@ def test_update_user_not_found(client):
     assert response.json() == {'detail': 'User with id 10 not found!'}
 
 
-# teste removendo um usuário com sucesso
+# teste removendo um usuário com sucesso (200 - OK)
 def test_delete_user(client, user):
     response = client.delete('/users/1')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': f'User {user.id} deleted'}
 
 
-# teste removendo um usuário inexistente e exibindo erro
+# teste removendo um usuário inexistente (404 - NOT FOUND)
 def test_delete_user_not_found(client):
     response = client.delete('/users/5')
     assert response.status_code == HTTPStatus.NOT_FOUND
